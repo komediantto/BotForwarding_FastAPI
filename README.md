@@ -1,2 +1,0 @@
-# BotForwarding
-bot forwarding
