@@ -1,0 +1,38 @@
+version: "3"
+
+volumes:
+  postgres:
+  static_volume:
+
+networks:
+  internal:
+
+services:
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - postgres:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    networks:
+      - internal
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_HOST_AUTH_METHOD: trust
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+  combined_app:
+    build: ./
+    container_name: combined_app
+    restart: on-failure
+    command: tail -f /dev/null
+    volumes:
+      - static_volume:/BotForwarding/app/media/
+    ports:
+      - "8000:8000"
+    networks:
+      - internal
+    env_file:
+      - ./.env
+    depends_on:
+      - db
